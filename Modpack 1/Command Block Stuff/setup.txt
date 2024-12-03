@@ -1,0 +1,75 @@
+## Pseudocode
+if _death > 0:
+	if _playerKillCount=0:
+		# if a death is not the result of a player kill,
+		# reset the _death flag to 0, and decrement the
+		# amount of Deaths (should only count deaths by players)
+		_death = 0
+		Deaths = Deaths - 1
+		return # early return for cleanliness
+	_random = gen_rand()
+	if _random > 0.5:
+		send_message("The Rattress did not accept your offering")
+		return
+	send_message("The Rattress did accept your offering")
+	_worldBorder = worldborder.get()
+	_newWorldBorder = _expansionFactor * _worldBorder
+	worldborder.set(_newWorldBorder,_expansionRate)
+
+
+## Commands for command blocks
+
+# Reset/Initialization Block
+
+# Variables for internal use
+scoreboard objectives remove _death
+scoreboard objectives remove _playerKillCount
+scoreboard objectives remove _globalVars
+scoreboard objectives remove _random
+scoreboard objectives add _death deathCount
+scoreboard objectives add _playerKillCount playerKillCount
+scoreboard objectives add _globalVars dummy
+scoreboard objectives add _random dummy
+scoreboard players set distToExpand _globalVars 128
+scoreboard players set expansionFactor _globalVars 128
+scoreboard players set random _globalVars 83939 # changing this changes the seed
+scoreboard players set mod_random _random 0
+scoreboard players set _0 _globalVars 0
+scoreboard players set _1 _globalVars 1
+scoreboard players set _3 _globalVars 3
+scoreboard players set _83 _globalVars 83
+scoreboard players set _100 _globalVars 100
+scoreboard players set _593 _globalVars 593
+scoreboard players set _997 _globalVars 997
+
+# Variables for Public Display
+scoreboard objectives remove Deaths
+scoreboard objectives remove PlayerKillCount
+scoreboard objectives add Deaths deathCount
+scoreboard objectives add PlayerKillCount playerKillCount
+
+# Random Number Block
+scoreboard players operation random _globalVars *= _83 _globalVars # impulse unconditional needs redstone
+scoreboard players operation random _globalVars += _997 _globalVars # impulse conditional
+scoreboard players operation random _globalVars %= _593 _globalVars # impulse conditional
+execute store result score mod_random _random run scoreboard players get random _globalVars # impulse conditional
+scoreboard players operation mod_random _random %= _3 _globalVars # impulse conditional
+
+# False Alarm Block
+execute if entity @p[scores={_death=1}] if entity @a[scores={_playerKillCount=0}] # repeat unconditional needs redstone
+scoreboard players operation @p[scores={_death=1}] Deaths -= _1 _globalVars # impulse conditional
+scoreboard players set @p[scores={_death=1}] _death 0 # impulse conditional
+
+# Rattress did not accept the offering
+execute if entity @p[scores={_death=1}] if entity @a[scores={_playerKillCount=1}] # repeat unconditional needs redstone
+execute if score mod_random _globalVars = _1 _globalVars run say The Rattress did not accept the offering # impulse conditional
+
+# Rattress did accept offering
+execute if entity @p[scores={_death=1}] if entity @a[scores={_playerKillCount=1}] # repeat unconditional needs redstone
+execute unless score mod_random _globalVars = _1 _globalVars run say The Rattress accepted the offering # impulse conditional
+scoreboard players operation distToExpand _globalVars += expansionFactor _globalVars
+
+# Expand the world border
+execute if score distToExpand _globalVars > _0 _globalVars run scoreboard players remove distToExpand _globalVars 1 # repeat unconditional needs redstone
+worldborder add 1 1 # impulse conditional
+
