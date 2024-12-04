@@ -63,21 +63,25 @@ scoreboard players operation mod_random _globalVars %= _3 _globalVars
 scoreboard players set priority _globalVars 1
 
 # False Alarm Block
-execute if entity @a[scores={_deathCount=1}] if entity @a[scores={_playerKillCount=0}] if score priority _globalVars = _1 _globalVars
+execute if entity @a[scores={_deathCount=1}] unless entity @a[scores={_playerKillCount=1}] if score priority _globalVars = _1 _globalVars
 scoreboard players operation @a[scores={_deathCount=1}] Deaths -= _1 _globalVars
 scoreboard players set @a[scores={_deathCount=1}] _deathCount 0
 scoreboard players set priority _globalVars 0
 
 # Rattress did not accept the offering
-execute if entity @a[scores={_deathCount=1}] if entity @a[scores={_playerKillCount=1}]
+execute if entity @a[scores={_deathCount=1}] if entity @a[scores={_playerKillCount=1}] if score priority _globalVars = _1 _globalVars
 execute if score mod_random _globalVars = _1 _globalVars run say The Rattress did not accept the offering
 scoreboard players set @a[scores={_deathCount=1}] _deathCount 0
+scoreboard players set @a[scores={_playerKillCount=1}] _playerKillCount 0
+scoreboard players set priority _globalVars 0
 
 # Rattress did accept offering
-execute if entity @a[scores={_deathCount=1}] if entity @a[scores={_playerKillCount=1}]
+execute if entity @a[scores={_deathCount=1}] if entity @a[scores={_playerKillCount=1}] if score priority _globalVars = _1 _globalVars
 execute unless score mod_random _globalVars = _1 _globalVars run say The Rattress accepted the offering
 scoreboard players operation distToExpand _globalVars += expansionFactor _globalVars
 scoreboard players set @a[scores={_deathCount=1}] _deathCount 0
+scoreboard players set @a[scores={_playerKillCount=1}] _playerKillCount 0
+scoreboard players set priority _globalVars 0
 
 # Expand the world border
 execute if score distToExpand _globalVars > _0 _globalVars run scoreboard players remove distToExpand _globalVars 1
