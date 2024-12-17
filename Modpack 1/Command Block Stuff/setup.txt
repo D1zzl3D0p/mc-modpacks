@@ -53,7 +53,7 @@ scoreboard objectives add PlayerKillCount playerKillCount
 scoreboard objectives setdisplay list Deaths
 
 # Random Number Block
-execute if entity @a[scores={_deathCount=1}]
+execute if entity @a[scores={_deathCount=1}] if score priority _globalVars = _0 _globalVars
  
 scoreboard players operation random _globalVars *= _83 _globalVars
 scoreboard players operation random _globalVars += _997 _globalVars
