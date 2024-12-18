@@ -85,5 +85,5 @@ scoreboard players set priority _globalVars 0
 
 # Expand the world border
 execute if score distToExpand _globalVars > _0 _globalVars run scoreboard players remove distToExpand _globalVars 1
-worldborder add 1 1
+worldborder add 1 0
 
